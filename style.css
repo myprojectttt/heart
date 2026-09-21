@@ -1,0 +1,197 @@
+html,
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+/* Nền tối có chút ánh hồng cho ấm hơn */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 55%, #2a0d1c 0%, #12060d 45%, #000 100%);
+  z-index: 0;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Mưa trái tim nằm dưới */
+#heartrain {
+  z-index: 1;
+}
+
+/* Trái tim chính nằm trên */
+#pinkboard {
+  z-index: 2;
+}
+
+/* Icon trái tim ở giữa màn hình */
+.heart-icon {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 80px;
+  height: 72.5px;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center;
+  z-index: 3;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: heart-pulse 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 18px rgba(234, 128, 176, 0.65));
+  
+  /* Bật tăng tốc phần cứng GPU giúp chuyển động phóng to siêu mượt */
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.heart-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: #ea80b0;
+  transition: filter 0.3s ease;
+}
+
+.heart-icon:hover {
+  filter: drop-shadow(0 0 28px rgba(234, 128, 176, 0.95));
+}
+
+.heart-icon:focus-visible {
+  outline: 2px solid #ffd0e0;
+  outline-offset: 6px;
+  border-radius: 50%;
+}
+
+/* Hiệu ứng nhịp đập nhẹ ban đầu */
+@keyframes heart-pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+}
+
+/* Hiệu ứng phóng to mượt mà khi click: 
+   Nén nhẹ (anticipation) -> bùng nổ phóng to 4x -> mờ dần tự nhiên */
+@keyframes heart-grow {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 18px rgba(234, 128, 176, 0.7));
+  }
+  18% {
+    /* Co nhẹ lại tạo lực đàn hồi trước khi nở bung */
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 1;
+    filter: drop-shadow(0 0 25px rgba(234, 128, 176, 0.9));
+  }
+  60% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(4.2);
+    opacity: 0;
+    filter: drop-shadow(0 0 60px rgba(234, 128, 176, 0));
+  }
+}
+
+.heart-icon.grow {
+  /* Dùng keyframe thay cho transition để tránh giật khung hình */
+  animation: heart-grow 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Hiệu ứng phóng to mượt mà khi click: kéo dài 1.5s
+   Nén nhẹ (anticipation) -> từ từ bùng nổ -> mờ dần tự nhiên */
+@keyframes heart-grow {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 18px rgba(234, 128, 176, 0.7));
+  }
+  15% {
+    /* Co nhẹ lại tạo lực đàn hồi trước khi nở bung */
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 1;
+    filter: drop-shadow(0 0 25px rgba(234, 128, 176, 0.9));
+  }
+  65% {
+    /* Nở từ từ và bắt đầu mờ nhẹ */
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0.9;
+  }
+  100% {
+    /* Tan biến hoàn toàn khớp với kích thước trái tim hạt */
+    transform: translate(-50%, -50%) scale(4.2);
+    opacity: 0;
+    filter: drop-shadow(0 0 60px rgba(234, 128, 176, 0));
+  }
+}
+
+.heart-icon.grow {
+  /* Tăng thời gian chạy animation lên 1.5s */
+  animation: heart-grow 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* =========================================
+   HIỆU ỨNG DẢI CHỮ VÀ LÀM MỜ VIỀN HÒA QUYỆN
+   ========================================= */
+#text-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 320px;
+  height: 290px;
+  transform: translate(-50%, -50%) scale(1.15);
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+
+  /* Cắt khung chuẩn hình SVG trái tim lớn */
+  clip-path: path("M160.00,290.00 L160.00,289.94 L159.99,289.75 L159.97,289.44 L159.92,289.01 L159.84,288.46 L159.73,287.78 L159.57,286.99 L159.35,286.08 L159.08,285.06 L158.75,283.92 L158.34,282.68 L157.85,281.32 L157.28,279.87 L156.62,278.31 L155.87,276.65 L155.02,274.90 L154.07,273.06 L153.01,271.13 L151.83,269.12 L150.55,267.03 L149.15,264.87 L147.64,262.63 L146.00,260.33 L144.24,257.96 L142.37,255.52 L140.37,253.04 L138.26,250.50 L136.02,247.90 L133.67,245.26 L131.20,242.58 L128.61,239.86 L125.92,237.10 L123.12,234.30 L120.22,231.47 L117.22,228.60 L114.13,225.71 L110.95,222.79 L107.68,219.84 L104.35,216.87 L100.94,213.88 L97.46,210.86 L93.94,207.82 L90.36,204.75 L86.74,201.67 L83.10,198.56 L79.42,195.43 L75.74,192.28 L72.04,189.11 L68.35,185.91 L64.67,182.70 L61.01,179.45 L57.38,176.18 L53.78,172.89 L50.24,169.57 L46.75,166.22 L43.32,162.84 L39.97,159.44 L36.70,156.00 L33.53,152.54 L30.45,149.05 L27.49,145.52 L24.64,141.97 L21.91,138.39 L19.32,134.78 L16.86,131.13 L14.55,127.47 L12.39,123.77 L10.39,120.05 L8.55,116.31 L6.88,112.55 L5.39,108.76 L4.07,104.97 L2.93,101.16 L1.97,97.34 L1.20,93.51 L0.62,89.69 L0.23,85.87 L0.03,82.05 L0.02,78.25 L0.20,74.47 L0.58,70.71 L1.15,66.99 L1.90,63.29 L2.84,59.64 L3.97,56.04 L5.27,52.50 L6.76,49.02 L8.41,45.61 L10.24,42.27 L12.23,39.02 L14.37,35.85 L16.67,32.79 L19.12,29.83 L21.70,26.98 L24.42,24.24 L27.26,21.63 L30.21,19.16 L33.28,16.81 L36.45,14.61 L39.71,12.56 L43.05,10.66 L46.47,8.92 L49.96,7.33 L53.50,5.92 L57.09,4.67 L60.72,3.59 L64.38,2.68 L68.06,1.95 L71.75,1.39 L75.44,1.01 L79.13,0.81 L82.80,0.78 L86.45,0.92 L90.07,1.23 L93.65,1.71 L97.18,2.36 L100.66,3.17 L104.08,4.13 L107.42,5.24 L110.69,6.50 L113.88,7.90 L116.98,9.42 L119.99,11.07 L122.90,12.84 L125.70,14.71 L128.40,16.68 L131.00,18.74 L133.47,20.88 L135.84,23.08 L138.08,25.34 L140.21,27.65 L142.21,29.99 L144.10,32.36 L145.86,34.75 L147.51,37.13 L149.04,39.51 L150.44,41.87 L151.74,44.19 L152.92,46.47 L153.99,48.71 L154.95,50.87 L155.81,52.97 L156.57,54.98 L157.23,56.89 L157.81,58.71 L158.30,60.41 L158.72,62.00 L159.06,63.46 L159.33,64.78 L159.55,65.97 L159.71,67.01 L159.83,67.91 L159.91,68.64 L159.96,69.23 L159.99,69.65 L160.00,69.90 L160.00,70.00 L160.00,69.93 L160.01,69.70 L160.03,69.30 L160.08,68.75 L160.15,68.03 L160.26,67.17 L160.42,66.15 L160.63,64.98 L160.89,63.68 L161.23,62.24 L161.63,60.67 L162.11,58.99 L162.67,57.19 L163.32,55.29 L164.07,53.29 L164.91,51.21 L165.85,49.05 L166.91,46.83 L168.07,44.56 L169.34,42.24 L170.73,39.89 L172.24,37.51 L173.87,35.13 L175.61,32.74 L177.48,30.37 L179.46,28.02 L181.57,25.71 L183.80,23.44 L186.14,21.22 L188.60,19.07 L191.18,17.00 L193.86,15.02 L196.65,13.13 L199.54,11.35 L202.54,9.68 L205.62,8.13 L208.80,6.71 L212.05,5.43 L215.39,4.30 L218.79,3.31 L222.26,2.48 L225.78,1.81 L229.35,1.30 L232.97,0.96 L236.61,0.79 L240.28,0.79 L243.97,0.97 L247.66,1.32 L251.36,1.85 L255.04,2.55 L258.70,3.43 L262.34,4.48 L265.93,5.71 L269.48,7.10 L272.98,8.65 L276.41,10.37 L279.77,12.25 L283.04,14.28 L286.22,16.45 L289.30,18.77 L292.28,21.23 L295.14,23.82 L297.88,26.53 L300.48,29.36 L302.95,32.31 L305.27,35.36 L307.44,38.51 L309.45,41.74 L311.31,45.07 L312.99,48.47 L314.50,51.94 L315.84,55.48 L316.99,59.07 L317.96,62.71 L318.75,66.40 L319.34,70.12 L319.75,73.87 L319.96,77.65 L319.99,81.45 L319.82,85.26 L319.46,89.08 L318.91,92.90 L318.17,96.73 L317.24,100.55 L316.13,104.36 L314.84,108.16 L313.37,111.94 L311.72,115.71 L309.91,119.46 L307.94,123.18 L305.80,126.88 L303.52,130.55 L301.08,134.20 L298.51,137.81 L295.80,141.40 L292.97,144.96 L290.03,148.49 L286.97,151.99 L283.81,155.45 L280.56,158.89 L277.22,162.30 L273.80,165.68 L270.32,169.04 L266.79,172.36 L263.20,175.66 L259.57,178.93 L255.92,182.18 L252.24,185.40 L248.55,188.60 L244.85,191.78 L241.16,194.93 L237.49,198.07 L233.83,201.18 L230.21,204.26 L226.63,207.33 L223.09,210.38 L219.61,213.40 L216.19,216.40 L212.84,219.37 L209.57,222.32 L206.37,225.25 L203.26,228.14 L200.25,231.01 L197.33,233.85 L194.52,236.65 L191.81,239.42 L189.21,242.15 L186.72,244.84 L184.35,247.49 L182.09,250.09 L179.96,252.64 L177.94,255.13 L176.05,257.57 L174.27,259.95 L172.62,262.27 L171.08,264.52 L169.66,266.69 L168.36,268.80 L167.17,270.82 L166.10,272.76 L165.13,274.62 L164.26,276.38 L163.49,278.05 L162.82,279.62 L162.23,281.10 L161.73,282.47 L161.31,283.73 L160.97,284.88 L160.69,285.93 L160.46,286.85 L160.30,287.67 L160.17,288.36 L160.09,288.93 L160.04,289.38 L160.01,289.71 L160.00,289.92 L160.00,290.00 Z");
+
+  /* Làm mờ viền (fade-out) để hòa quyện hoàn hảo vào background tối */
+  -webkit-mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 0) 88%);
+  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 0) 88%);
+}
+
+.marquee-row {
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: monospace, sans-serif;
+  color: #ff9ec7;
+  text-shadow: 0 0 6px rgba(255, 128, 176, 0.9), 0 0 12px rgba(255, 105, 180, 0.7);
+  animation: marquee-move 12s linear infinite;
+}
+
+/* Các dòng chẵn chạy ngược hướng và tốc độ khác nhau tạo hiệu ứng sống động */
+.marquee-row:nth-child(even) {
+  animation-direction: reverse;
+  animation-duration: 15s;
+  color: #ffd0e0;
+}
+
+@keyframes marquee-move {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
